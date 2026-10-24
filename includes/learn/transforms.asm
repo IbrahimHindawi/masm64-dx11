@@ -71,4 +71,27 @@ draw_cube proc buffer:qword, t:qword, model:qword
     ret
 draw_cube endp
 
+; rcx: constant buffer, rdx: &transforms, r8: vertex buffer (32-byte vertices: position, normal,
+; uv), r9: vertex count, [rsp+32]: model matrix
+;
+; draw_cube for any vertex buffer: bind it, send the model and normal matrices, draw.
+align 16
+draw_vertices proc buffer:qword, t:qword, vb:qword, count:qword, model:qword
+    local stride:dword, offset_:dword
+    mov stride, 32
+    mov offset_, 0
+    vcall context, ID3D11DeviceContext_IASetVertexBuffers, 0, 1, ADDR vb, ADDR stride, ADDR offset_
+    mov rcx, t
+    mov rdx, model
+    for row, <0, 16, 32, 48>
+        movups xmm0, [rdx + row]
+        movups [rcx + row], xmm0
+    endm
+    lea rcx, [rcx].transforms.normal_matrix
+    invoke m4_normal_matrix, rcx, model
+    invoke update_buffer, buffer, t, sizeof transforms
+    vcall context, ID3D11DeviceContext_Draw, count, 0
+    ret
+draw_vertices endp
+
 endif

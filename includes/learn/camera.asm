@@ -225,6 +225,11 @@ align 16
 camera_process_input proc cam:qword, dt_ref:qword
     USING rbx, rsi
     SaveRegs
+    ; Nothing at all while another window has the focus, the zoom's clamp included: a lesson may
+    ; start the zoom outside the range the wheel keeps it in.
+    invoke GetForegroundWindow
+    cmp rax, window
+    jne done
     lea rbx, camera_keys
     xor esi, esi
     keys:
@@ -251,6 +256,7 @@ camera_process_input proc cam:qword, dt_ref:qword
     movss xmm1, window_scroll
     invoke camera_process_scroll, cam
     mov dword ptr window_scroll, 0
+    done:
     RestoreRegs
     ret
 camera_process_input endp

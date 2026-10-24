@@ -73,7 +73,7 @@ window_frame dword 0
 window_shot_time real4 1.0
 window_shot_path byte 260 dup(0)
 
-window_class_name byte "LearnD3D11", 0
+window_class_name byte "LearnD3D11Masm64", 0
 
 ;---------------------------------------------------------------------------------------------------
 .code
@@ -144,14 +144,20 @@ window_parse_args proc
         jz not_shot
             add rsi, 7
             lea rdi, window_shot_path
+            ; up to the next space, or between quotes when it is quoted
+            mov dl, ' '
+            cmp byte ptr [rsi], '"'
+            jne copy_path
+                mov dl, '"'
+                inc rsi
             copy_path:
                 mov al, [rsi]
-                cmp al, ' '
-                je path_done
                 test al, al
                 jz path_done
-                mov [rdi], al
                 inc rsi
+                cmp al, dl
+                je path_done
+                mov [rdi], al
                 inc rdi
                 jmp copy_path
             path_done:
@@ -389,6 +395,15 @@ window_poll proc
     jz no_escape
         invoke DestroyWindow, window
     no_escape:
+
+    ; A --shot that ends before its frame is taken is a failure, not a quiet exit.
+    cmp running, 0
+    jne still_running
+    cmp window_shot_path, 0
+    je still_running
+        print "shot: the window was closed before the picture was taken\n"
+        invoke ExitProcess, 2
+    still_running:
     mov eax, running
     ret
 window_poll endp

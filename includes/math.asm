@@ -151,6 +151,29 @@ powf proc
     ret
 powf endp
 
+; rand and srand exactly as the C runtime has them, so a lesson seeded the same way places its
+; random things where LearnOpenGL's and rin's versions do.
+.data
+math_rand_state dword 1
+.code
+; rcx: seed
+align 16
+srand proc
+    mov math_rand_state, ecx
+    ret
+srand endp
+
+; -> eax: 0..32767
+align 16
+rand proc
+    imul eax, math_rand_state, 214013
+    add eax, 2531011
+    mov math_rand_state, eax
+    shr eax, 16
+    and eax, 7FFFh
+    ret
+rand endp
+
 ; xmm0: x, xmm1: lo, xmm2: hi -> xmm0
 align 16
 clampf proc
