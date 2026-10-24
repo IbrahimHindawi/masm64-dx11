@@ -159,7 +159,7 @@ camera_process_keyboard proc cam:qword, direction:qword, seconds:qword
     mulss xmm2, [rcx].camera.speed          ; how far this frame
     mov eax, dword ptr direction
     lea rdx, [rcx].camera.front
-    cmp eax, CAMERA_LEFT
+    cmp eax, CAMERA_RIGHT
     jb along
     lea rdx, [rcx].camera.right
     cmp eax, CAMERA_UP
