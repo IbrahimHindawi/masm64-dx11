@@ -28,7 +28,8 @@ both conversions in hardware:
    encodes on the way in
 
 With that in place, physically correct `1/d^2` falloff looks right. Tab shows
-the uncorrected version, where `1/d^2` looks far too steep.
+the uncorrected version, which needs the weaker `1/d` to look anywhere near as
+natural.
 
 ## 3.1 Shadow mapping
 
@@ -67,8 +68,9 @@ A texture of normals, one per texel, so a flat wall lights like bricks. The
 map's normals are in tangent space, z out of the surface, so the vertex shader
 builds the tangent, bitangent and normal in world space (TBN) and the pixel
 shader turns the sampled normal through them. `create_wall` computes the
-tangent from position and uv deltas. In D3D v runs down the image, and the
-map's +y is up it, so the bitangent is `cross(normal, tangent)`.
+tangent from position and uv deltas. The map's files are made for GL, which
+shows them upside down, so here their +y points down the image, the way v
+runs, and the bitangent is `cross(tangent, normal)`.
 
 ## 5.1 Parallax mapping
 

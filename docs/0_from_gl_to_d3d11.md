@@ -58,8 +58,9 @@ D3D code simply does not. Where it matters:
 - `.obj` files usually assume v up, so `model_load` can flip v; the backpack's
   textures happen to suit top-down v already, the planet and rock need the
   flip
-- normal maps store "up the image" as +y, which is the direction v
-  *decreases*: the bitangent is `cross(normal, tangent)` (5.4)
+- LearnOpenGL's normal maps are made for GL, which shows the files upside
+  down; seen the right way up their +y points down the image, the way v
+  *increases*, so the bitangent is `cross(tangent, normal)` (5.4)
 - the equirectangular panorama maps latitude as `0.5 - asin(y) / pi` (6.2.1)
 
 ### Winding

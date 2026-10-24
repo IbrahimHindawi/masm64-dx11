@@ -94,8 +94,9 @@ float3 normal_from_map(float3 tangent_normal, float3 world, float3 n, float2 uv)
     float det = st1.x * st2.y - st2.x * st1.y;
     float3 t = normalize((q1 * st2.y - q2 * st1.y) * sign(det));
     t = normalize(t - n * dot(n, t));
-    // The map's y is up the image, against v: cross(n, t), as in 5.4 normal mapping.
-    float3 b = cross(n, t);
+    // The map's y points down the image, along v: cross(t, n), as in 5.4
+    // normal mapping.
+    float3 b = cross(t, n);
     return normalize(mul(tangent_normal, float3x3(t, b, n)));
 }
 

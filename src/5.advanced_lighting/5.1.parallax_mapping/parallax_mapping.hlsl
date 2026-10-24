@@ -39,10 +39,11 @@ tangent_out vs_main(tangent_in v)
     // Gram-Schmidt: make the tangent exactly perpendicular to the normal
     float3 t = normalize(mul((float3x3)model, v.tangent));
     o.t = normalize(t - dot(t, o.n) * o.n);
-    // The map's y points up the image, the way v decreases. For a surface
-    // facing the viewer that is cross(normal, tangent). (GL's v runs up,
-    // which is why LearnOpenGL's bitangent comes out the other way.)
-    o.b = cross(o.n, o.t);
+    // The map's y points down the image, the way v increases: the files are
+    // made for GL, which shows images upside down, so seen the right way up
+    // their +y is down. For a surface facing the viewer that is
+    // cross(tangent, normal).
+    o.b = cross(o.t, o.n);
     return o;
 }
 
@@ -59,18 +60,13 @@ SamplerState linear_wrap : register(s0);
 
 static const float depth_scale = 0.1;
 
-// tangent space y is up the image; uv's v runs down it
-float2 to_uv(float2 tangent_xy)
-{
-    return float2(tangent_xy.x, -tangent_xy.y);
-}
-
 // `to_eye` is in tangent space: z out of the surface
 float2 parallax(float2 uv, float3 to_eye)
 {
     if (mode == 1) return uv;
     // the whole shift that the deepest point (depth 1) would cause
-    float2 full_shift = to_uv(to_eye.xy / to_eye.z * depth_scale);
+    // tangent space x and y run the way u and v do
+    float2 full_shift = to_eye.xy / to_eye.z * depth_scale;
     if (mode == 2)
     {
         return uv - full_shift * depth_map.Sample(linear_wrap, uv).r;
