@@ -5,8 +5,9 @@
 ; its texture shows. A normal map stores a normal per texel instead (the bluish image: xyz packed
 ; into rgb), so every brick and every mortar groove catches the light on its own.
 ;
-; The map's normals are in tangent space: z out of the surface, x along u, y up the image. That
-; keeps one map valid however the surface is turned. The vertex shader builds the three axes in
+; The map's normals are in tangent space: z out of the surface, x along u, y along v. (The files
+; are made for GL, which shows them upside down, so their +y points down the image as they sit,
+; the way v runs.) That keeps one map valid however the surface is turned. The vertex shader builds the three axes in
 ; world space, tangent, bitangent and normal (TBN), and the pixel shader turns the map's normal
 ; into world space through them before lighting as usual. create_wall (includes/learn/wall.asm)
 ; computes the tangent from how position and uv change along the triangle's edges.
